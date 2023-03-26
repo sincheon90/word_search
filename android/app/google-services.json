@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "677887133700",
+    "project_id": "word-search-c9186",
+    "storage_bucket": "word-search-c9186.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:677887133700:android:126bdf85284812e98b0d51",
+        "android_client_info": {
+          "package_name": "com.example.word_search"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "677887133700-cpmc06tb355l3dd0lkdn1vv1mlcoed3m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCsBX1jq7xWXozeDKj3uVJX5kGIKIZrVaI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "677887133700-cpmc06tb355l3dd0lkdn1vv1mlcoed3m.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "677887133700-s6e0j5qcq6mhtb4d0aihom2s57b2l9j6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.wordSearch"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

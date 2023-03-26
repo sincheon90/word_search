@@ -1,22 +1,19 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:word_search/component/search_bar.dart';
 import 'package:word_search/const/colors.dart';
+import 'package:word_search/models/word_model.dart';
+import 'package:word_search/provider/word_provider.dart';
 
-class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key? key}) : super(key: key);
-
-  @override
-  State<SearchScreen> createState() => _SearchScreenState();
-}
-
-class _SearchScreenState extends State<SearchScreen> {
-  List<dynamic> _data = [];
-  final TextStyle meaningStyle =
-      TextStyle(fontSize: 16.0, color: DARK_GREY_COLOR);
+class SearchScreen extends StatelessWidget {
+  final meaningStyle = TextStyle(fontSize: 16.0, color: DARK_GREY_COLOR);
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<WordProvider>();
+    final searchWord = provider.searchWord;
+    final cachedWordMeanings = provider.cache[searchWord] ?? [];
+
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
@@ -25,24 +22,27 @@ class _SearchScreenState extends State<SearchScreen> {
         appBar: AppBar(
           backgroundColor: Colors.transparent,
           elevation: 0,
-          title: SearchBar(search: _search),
+          title: SearchBar(search: (term) => provider.search(term: term)),
         ),
-        body: _displayWordMeanings(_data),
+        body: _displayWordMeanings(cachedWordMeanings),
       ),
     );
   }
 
-  Widget _displayWordMeanings(datas) {
+  Widget _displayWordMeanings(List<WordModel> wordMeanings) {
     return ListView.builder(
-      itemCount: datas.length,
+      itemCount: wordMeanings.length,
       itemBuilder: (BuildContext context, int index) {
-        final wordData = datas[index];
-        final meanings = wordData['meanings'];
+        final wordMeaning = wordMeanings[index];
+        final meanings = wordMeaning.meanings;
 
         return ListTile(
+          onTap: () {
+            print(meanings.toString());
+          },
           title: Text.rich(
             TextSpan(
-              text: wordData['word'],
+              text: wordMeaning.word,
               style: TextStyle(fontSize: 20.0), // 기본 폰트 크기
               children: [
                 TextSpan(
@@ -65,23 +65,24 @@ class _SearchScreenState extends State<SearchScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        meaning['partOfSpeech'],
+                        meaning.partOfSpeech,
                         style: meaningStyle.copyWith(color: PRIMARY_COLOR),
                       ),
-                      for (final def in meaning['definitions'])
+                      for (final def in meaning.definitions)
                         Padding(
                           padding: EdgeInsets.only(bottom: 8.0),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                '' + def['definition'],
+                                def.definition,
                                 style: meaningStyle,
                               ),
-                              if (def['example'] != null)
+                              if (def.example != null)
                                 Text(
-                                  'ex) ' + def['example'],
-                                  style: meaningStyle.copyWith(color: LIGHT_GREY_COLOR),
+                                  'ex) ${def.example}',
+                                  style: meaningStyle.copyWith(
+                                      color: LIGHT_GREY_COLOR),
                                 ),
                             ],
                           ),
@@ -94,18 +95,5 @@ class _SearchScreenState extends State<SearchScreen> {
         );
       },
     );
-  }
-
-  Future<void> _search(String term) async {
-    try {
-      final response = await Dio().get(
-          'https://api.dictionaryapi.dev/api/v2/entries/en_US/$term',
-          options: Options(responseType: ResponseType.json));
-      setState(() {
-        _data = response.data;
-      });
-    } catch (e) {
-      print('Error: $e');
-    }
   }
 }

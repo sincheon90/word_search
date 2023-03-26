@@ -1,0 +1,56 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:word_search/backup/part_of_speech_model.dart';
+
+class WordProvider extends ChangeNotifier {
+  String searchWord = '';
+  Map<String, List<dynamic>> cache = {};
+
+  List<PartOfSpeechModel> meaning = <PartOfSpeechModel>[]; /*List<PartOfSpeechModel> meanings*/
+  List<List<PartOfSpeechModel>> wordData = <List<PartOfSpeechModel>>[];
+  List<List<List<PartOfSpeechModel>>> wordDatas = <List<List<PartOfSpeechModel>>>[];
+
+  List<PartOfSpeechModel> wordDataParser(wordData) {
+    meaning = wordData.from(wordData['meanings']).map((meaningData) => PartOfSpeechModel(
+      partOfSpeeach: meaningData['partOfSpeech'],
+      definitions: List<dynamic>.from(meaningData['definitions'])
+          .map((definitionData) => DefinitionModel(
+        definition: definitionData['definition'],
+        example: definitionData['example'],
+      ))
+          .toList(),
+    ))
+        .toList();
+    return meaning;
+  }
+
+  List<List<PartOfSpeechModel>> respDataParser(respData) {
+    List<List<PartOfSpeechModel>> wordData= <List<PartOfSpeechModel>>[];
+    return wordData;
+  }
+
+  void search({required term}) async {
+    searchWord = term;
+
+    if (cache.containsKey(searchWord)) {
+      notifyListeners();
+      return;
+    }
+
+    final resp = await Dio()
+        .get('https://api.dictionaryapi.dev/api/v2/entries/en_US/$term');
+
+    cache.update(term, (value) => resp.data, ifAbsent: () => resp.data);
+    notifyListeners();
+  }
+
+  void clearCache() {
+    cache.clear();
+  }
+
+  @override
+  void dispose() {
+    clearCache();
+    super.dispose();
+  }
+}

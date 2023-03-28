@@ -1,5 +1,5 @@
 # word_search
-Portfolio를 위한 작성한 프로젝트입니다.
+Portfolio를 위해 작성한 프로젝트입니다.
 
 ## 개요
 Word Search는 무료 영영사전 API를 이용하여 단어의 뜻과 예문을 검색하는 앱입니다.
